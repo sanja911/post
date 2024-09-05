@@ -14,7 +14,7 @@ import { CommentsModule } from './modules/comments/comments.module';
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      typePaths: ['./**/*/*.graphql'],
+      typePaths: ['./**/*.graphql'],
       playground: true,
     }),
     TypeOrmModule.forRoot(databaseConfig),
