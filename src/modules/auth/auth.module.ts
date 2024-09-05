@@ -11,8 +11,8 @@ import { AuthResolver } from './auth.resolver';
     forwardRef(() => UserModule), // Use forwardRef to avoid circular dependency
     PassportModule,
     JwtModule.register({
-      secret: '3def3faad7a7f7c52fe19f90', // In production, use environment variable
-      signOptions: { expiresIn: '60m' },
+      secret: process.env.JWT_SECRET, // In production, use environment variable
+      signOptions: { expiresIn: '7d' },
     }),
   ],
   providers: [AuthService, JwtStrategy, AuthResolver],
