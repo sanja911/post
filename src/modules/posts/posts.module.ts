@@ -11,5 +11,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [HttpModule, TypeOrmModule.forFeature([Post, PostRepository])],
   controllers: [PostsController],
   providers: [PostsService, ApiService],
+  exports: [PostsService],
 })
 export class PostsModule {}

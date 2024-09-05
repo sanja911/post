@@ -1,0 +1,15 @@
+  type Comment {
+    id: Int!
+    userId: Int!
+    body: String!
+    postId: Int!
+    post: Post!
+  }
+  
+  type Query {
+    comments(postId: Int!): [Comment!]!
+  }
+  
+  type Mutation {
+    createComment(userId: Int!, postId: Int!, body: String!): Comment!
+  }
