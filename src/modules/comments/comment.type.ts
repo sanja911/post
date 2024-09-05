@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Post } from '../posts/posts.entity';
 
 @ObjectType()
 export class CommentResponse {
@@ -13,4 +14,7 @@ export class CommentResponse {
 
   @Field()
   postId: number;
+
+  @Field()
+  post: Post;
 }

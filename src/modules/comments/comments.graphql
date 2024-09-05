@@ -5,6 +5,12 @@
     postId: Int!
     post: Post!
   }
+
+  type Post {
+    id: Int!
+    userId: Int!
+    body: String!
+  }
   
   type Query {
     comments(postId: Int!): [Comment!]!

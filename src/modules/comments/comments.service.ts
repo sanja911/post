@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Comment } from './comments.entity';
 import { Cache } from 'cache-manager';
 import { PostsService } from '../posts/posts.service';
+import { Post } from '../posts/posts.entity';
 
 @Injectable()
 export class CommentsService {
@@ -24,6 +25,10 @@ export class CommentsService {
     }
 
     const comments = await this.commentsRepository.find({ where: { postId } });
+    for (const comm of comments) {
+      console.log('THIS IS COMMENT', comm);
+    }
+
     await this.cacheManager.set(cacheKey, comments, 60000);
     return comments;
   }
@@ -33,7 +38,6 @@ export class CommentsService {
     postId: number;
     body: string;
   }): Promise<Comment> {
-    const comment = this.commentsRepository.create(commentData);
     const post = await this.postService.findOne(commentData.postId);
     if (!post) {
       throw new NotFoundException(
@@ -41,11 +45,20 @@ export class CommentsService {
       );
     }
 
+    const comment = this.commentsRepository.create({
+      ...commentData,
+      post,
+    });
+
     await this.commentsRepository.save(comment);
 
     // Invalidate cache
     await this.cacheManager.del(`comments_post_${commentData.postId}`);
 
     return comment;
+  }
+
+  async getPost(postId: number): Promise<Post> {
+    return await this.postService.findOne(postId);
   }
 }

@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Comment as CommentEntity } from '../comments/comments.entity';
+import { Comment } from '../comments/comments.entity';
 
 @ObjectType()
-@Entity()
+@Entity('posts')
 export class Post {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -21,10 +21,7 @@ export class Post {
   @Column()
   body: string;
 
-  @ManyToOne(() => CommentEntity, (comment) => comment.posts, {
-    orphanedRowAction: 'delete',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  comments: CommentEntity;
+  @Field(() => [Comment], { nullable: true })
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 }
