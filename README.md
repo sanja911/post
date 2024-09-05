@@ -1,85 +1,91 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Sample Project
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is a sample NestJS project that demonstrates the use of TypeScript, Axios for API calls, TypeORM for database operations, and includes caching. It interacts with the JSONPlaceholder API and provides CRUD operations for posts.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- NestJS framework with TypeScript
+- Axios for HTTP requests
+- TypeORM for database operations
+- Caching implementation
+- CRUD operations for posts
+- Interaction with JSONPlaceholder API
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Prerequisites
 
-## Project setup
+Before you begin, ensure you have met the following requirements:
 
-```bash
-$ npm install
+- Node.js (v14 or later)
+- npm (v6 or later)
+- PostgreSQL
+
+## Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/sanja911/post.git
+   cd post
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Set up environment variables:
+   Create a `.env` file in the root directory and add the following:
+   ```
+   DB_HOST=your_database_host
+   DB_PORT=your_database_port
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   DB_NAME=your_database_name
+   PORT=port
+   JWT_SECRET=3def3faad7a7f7c52fe19f90
+   ```
+
+4. Create the database:
+   ```
+   createdb your_database_name
+   ```
+
+## Running the Application
+
+1. Start the application in development mode:
+   ```
+   npm run start:dev
+   ```
+
+2. The application will be available at default port on PORT 3000
+
+3. For the graphql playground is available at `url:PORT/graphql`
+
+## API Endpoints
+
+- `GET /posts`: Get all posts
+- `GET /posts/:id`: Get a specific post
+- `POST /posts`: Create a new post
+- `PUT /posts/:id`: Update a post
+- `PATCH /posts/:id`: Partially update a post
+- `DELETE /posts/:id`: Delete a post
+- `GET /posts/cache/keys`: Get all cache keys
+- `GET /posts/cache/:key`: Get cache value for a specific key
+
+## Dummy Data
+
+This application uses the JSONPlaceholder API, which provides dummy data. You don't need to set up any initial data to run the application.
+
+However, if you want to create a new post, you can use the following JSON structure:
+
+```json
+{
+  "title": "Your post title",
+  "body": "Your post content",
+  "userId": 1
+}
 ```
 
-## Compile and run the project
+## Notes
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This application is already delpoyed to vercel with base url:
+`https://post-git-main-sanja911s-projects.vercel.app/`
