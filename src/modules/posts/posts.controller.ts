@@ -39,7 +39,7 @@ export class PostsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() postData: Partial<PostEntity>,
+    @Body() postData: PostEntity,
   ): Promise<PostEntity> {
     return this.postsService.update(+id, postData);
   }

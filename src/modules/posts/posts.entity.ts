@@ -5,6 +5,7 @@ import { Comment } from '../comments/comments.entity';
 @ObjectType()
 @Entity('posts')
 export class Post {
+  [x: string]: any;
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;

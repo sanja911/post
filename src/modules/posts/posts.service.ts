@@ -31,14 +31,30 @@ export class PostsService {
     }
 
     this.logger.debug('Fetching posts from API and saving to cache');
-    const responses = await this.apiService.get('/posts');
-    const posts = responses.data;
+    const response = await this.apiService.get('/posts');
+    const posts = response.data;
     if (posts.length === 0) {
       throw new NotFoundException('No posts found');
     }
-    // const savedPosts = await this.postRepository.save(posts);
-    await this.cacheManager.set('all_posts', responses.data, 60000); // Cache for 1 minute
-    return responses.data;
+
+    const existingPost = [];
+    for (const post of posts) {
+      const postData = await this.postRepository.findOneBy({
+        title: post.title,
+        body: post.body,
+      });
+
+      if (postData) {
+        existingPost.push(postData);
+      }
+    }
+
+    if (existingPost.length >= 1) {
+      return posts;
+    }
+    const savedPosts = await this.postRepository.save(posts);
+    await this.cacheManager.set('all_posts', savedPosts, 60000); // Cache for 1 minute
+    return savedPosts;
   }
 
   async findOne(id: number): Promise<Post> {
@@ -76,41 +92,35 @@ export class PostsService {
     }
 
     const response = await this.apiService.post('/posts', postData);
-    const postEntry = response.data;
-    const createdPost = await this.postRepository.save(postEntry);
-    const cacheKey = `post_${createdPost.id}`;
-    await this.cacheManager.set(cacheKey, createdPost, 60000); // Cache for 1 minute
+    const createdPost = response.data;
+    const savedPost = await this.postRepository.save(createdPost);
+
+    // Cache the new post
+    const cacheKey = `post_${savedPost.id}`;
+    await this.cacheManager.set(cacheKey, savedPost, 60000); // Cache for 1 minute
+
     // Update the all_posts cache
     const cachedAllPosts = await this.cacheManager.get<Post[]>('all_posts');
     if (cachedAllPosts) {
-      cachedAllPosts.push(createdPost);
+      cachedAllPosts.push(savedPost);
       await this.cacheManager.set('all_posts', cachedAllPosts, 60000); // Cache for 1 minute
     }
-    return createdPost;
-  }
 
-  async update(id: any, postData: Partial<Post>): Promise<Post> {
-    const existingPostData = await this.apiService.getById(`/posts/${id}`);
-    const existingPost = await this.postRepository.findOneBy({ id });
-    if (!existingPost && existingPostData.status === 404) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
-    }
-
-    if (!existingPost && existingPostData.status === 200) {
-      const response = await this.apiService.put(`/posts/${id}`, postData);
-      return response.data;
-    }
-
-    const response = await this.apiService.put(`/posts/${id}`, postData);
-    const updatedPost = response.data;
-    const savedPost = await this.postRepository.save(updatedPost);
-    await this.cacheManager.del(`post_${id}`);
+    this.logger.debug(`Created and cached new post with ID ${savedPost.id}`);
     return savedPost;
   }
 
-  async partialUpdate(id: any, postData: Partial<Post>): Promise<Post> {
-    const existingPostData = await this.apiService.getById(`/posts/${id}`);
+  async update(id: any, postData: Post): Promise<Post> {
     const existingPost = await this.postRepository.findOneBy({ id });
+    console.log('existingPost', existingPost);
+    if (existingPost.id) {
+      postData.id = id;
+      const savedPost = await this.postRepository.save(postData);
+      await this.cacheManager.del(`post_${id}`);
+      return savedPost;
+    }
+
+    const existingPostData = await this.apiService.getById(`/posts/${id}`);
     if (!existingPost && existingPostData.status === 404) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
@@ -118,16 +128,39 @@ export class PostsService {
     if (!existingPost && existingPostData.status === 200) {
       const response = await this.apiService.put(`/posts/${id}`, postData);
       return response.data;
+    }
+  }
+
+  async partialUpdate(id: number, postData: Partial<Post>): Promise<Post> {
+    const existingPost = await this.postRepository.findOneBy({ id });
+    if (!existingPost) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
     }
 
     const response = await this.apiService.patch(`/posts/${id}`, postData);
     const updatedPost = response.data;
+    updatedPost.id = id;
     const savedPost = await this.postRepository.save(updatedPost);
-    await this.cacheManager.del(`post_${id}`);
+
+    // Update the cache for this specific post
+    const cacheKey = `post_${id}`;
+    await this.cacheManager.set(cacheKey, savedPost, 60000); // Cache for 1 minute
+
+    // Update the all_posts cache
+    const cachedAllPosts = await this.cacheManager.get<Post[]>('all_posts');
+    if (cachedAllPosts) {
+      const index = cachedAllPosts.findIndex((post) => post.id === id);
+      if (index !== -1) {
+        cachedAllPosts[index] = savedPost;
+        await this.cacheManager.set('all_posts', cachedAllPosts, 60000); // Cache for 1 minute
+      }
+    }
+
+    this.logger.debug(`Partially updated and cached post with ID ${id}`);
     return savedPost;
   }
 
-  async remove(id: any): Promise<void> {
+  async remove(id: number): Promise<void> {
     const existingPost = await this.postRepository.findOneBy({ id });
     if (!existingPost) {
       throw new NotFoundException(`Post with ID ${id} not found`);
@@ -135,7 +168,19 @@ export class PostsService {
 
     await this.apiService.delete(`/posts/${id}`);
     await this.postRepository.delete(id);
-    await this.cacheManager.del(`post_${id}`);
+
+    // Remove the post from cache
+    const cacheKey = `post_${id}`;
+    await this.cacheManager.del(cacheKey);
+
+    // Update the all_posts cache
+    const cachedAllPosts = await this.cacheManager.get<Post[]>('all_posts');
+    if (cachedAllPosts) {
+      const updatedPosts = cachedAllPosts.filter((post) => post.id !== id);
+      await this.cacheManager.set('all_posts', updatedPosts, 60000); // Cache for 1 minute
+    }
+
+    this.logger.debug(`Removed post with ID ${id} and updated cache`);
   }
 
   async getCacheKeys(): Promise<string[]> {
@@ -148,5 +193,17 @@ export class PostsService {
       throw new NotFoundException(`No cache found for key: ${key}`);
     }
     return value;
+  }
+
+  async customCompare(arr1: Post[], arr2: Post[]): Promise<boolean> {
+    if (arr1.length !== arr2.length) return false;
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i].title !== arr2[i].title || arr1[i].body !== arr2[i].body) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
