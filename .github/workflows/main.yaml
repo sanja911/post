@@ -14,6 +14,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+      - name: Install hbs package
+        run: npm install --global hbs
       - name: Install npm dependencies
         run: npm ci
       - name: Build NestJS Project
