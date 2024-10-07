@@ -10,6 +10,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AuthModule } from './modules/auth/auth.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -30,5 +31,6 @@ import { AppController } from './app.controller';
     CommentsModule,
   ],
   controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
