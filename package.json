@@ -37,7 +37,6 @@
     "bcrypt": "^5.1.1",
     "cache-manager-redis-store": "^3.0.1",
     "handlebars": "^4.7.8",
-    "hbs": "^4.2.0",
     "lodash": "^4.17.21",
     "mysql2": "^3.11.0",
     "passport": "^0.7.0",
@@ -48,6 +47,7 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "hbs": "^4.2.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
