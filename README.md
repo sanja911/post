@@ -41,7 +41,7 @@ Before you begin, ensure you have met the following requirements:
    DB_PASSWORD=your_password
    DB_NAME=your_database_name
    PORT=port
-   JWT_SECRET=3def3faad7a7f7c52fe19f90
+   JWT_SECRET=random_secret
    ```
 
 4. Create the database:
